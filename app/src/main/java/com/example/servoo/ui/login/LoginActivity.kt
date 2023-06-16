@@ -1,6 +1,7 @@
 package com.example.servoo.ui.login
 
 import android.app.Activity
+import android.content.Intent
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -8,29 +9,39 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
+import android.util.Log
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
 import com.example.servoo.databinding.ActivityLoginBinding
 
 import com.example.servoo.R
+import com.example.servoo.databinding.ActivityOtpBinding
+import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.*
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import java.util.concurrent.TimeUnit
 
 class LoginActivity : AppCompatActivity() {
 
+    private lateinit var auth: FirebaseAuth
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var otpBinding: ActivityOtpBinding
+    private var storedVerificationId: String? = ""
+    private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
+    private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val username = binding.username
-        val password = binding.password
-        val login = binding.login
-        val loading = binding.loading
+        auth = Firebase.auth
+        val phoneNumber = binding.phoneNumber
+        val getOtpButton = binding.getOtp
 
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
@@ -38,21 +49,24 @@ class LoginActivity : AppCompatActivity() {
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
-            // disable login button unless both username / password is valid
-            login.isEnabled = loginState.isDataValid
-
-            if (loginState.usernameError != null) {
-                username.error = getString(loginState.usernameError)
-            }
-            if (loginState.passwordError != null) {
-                password.error = getString(loginState.passwordError)
+            if (loginState.phoneNumberError != null) {
+                phoneNumber.error = getString(loginState.phoneNumberError)
             }
         })
+
+        loginViewModel.clickEvent.observe(this) { clicked ->
+            if (clicked) {
+                // The click event has occurred, perform the desired action
+                launchNextActivity(phoneNumber.text.toString())
+            } else {
+                Toast.makeText(this, R.string.invalid_phonenumber, Toast.LENGTH_SHORT).show()
+            }
+        }
+
 
         loginViewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
             if (loginResult.error != null) {
                 showLoginFailed(loginResult.error)
             }
@@ -65,37 +79,42 @@ class LoginActivity : AppCompatActivity() {
             finish()
         })
 
-        username.afterTextChanged {
+        phoneNumber.afterTextChanged {
             loginViewModel.loginDataChanged(
-                username.text.toString(),
-                password.text.toString()
+                phoneNumber.text.toString()
             )
         }
 
-        password.apply {
+        phoneNumber.apply {
             afterTextChanged {
                 loginViewModel.loginDataChanged(
-                    username.text.toString(),
-                    password.text.toString()
+                    phoneNumber.text.toString()
                 )
             }
 
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            username.text.toString(),
-                            password.text.toString()
-                        )
+//                        loginViewModel.login(
+//                            phoneNumber.text.toString()
+//                        )
+                        loginViewModel.onGetOtpButtonClick(phoneNumber.text.toString())
                 }
                 false
             }
-
-            login.setOnClickListener {
-                loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
-            }
         }
+
+        getOtpButton.setOnClickListener {
+            loginViewModel.onGetOtpButtonClick(phoneNumber.text.toString())
+        }
+    }
+
+
+    private fun launchNextActivity(phoneNumber:String) {
+        Log.println(Log.DEBUG,"LOGIN ACTIVITY","Starting OTP ACTIVITY")
+        val otpIntent = Intent(this, OTPActivity::class.java)
+        otpIntent.putExtra("PHONE_NUMBER", phoneNumber)
+        startActivity(otpIntent)
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
@@ -111,6 +130,10 @@ class LoginActivity : AppCompatActivity() {
 
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    }
+
+    companion object {
+        private const val TAG = "LoginActivity"
     }
 }
 
