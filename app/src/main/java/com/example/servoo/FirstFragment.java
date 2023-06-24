@@ -9,7 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.servoo.data.model.UserInfo;
 import com.example.servoo.databinding.FragmentFirstBinding;
+import com.google.gson.Gson;
 
 public class FirstFragment extends Fragment {
 
@@ -20,15 +22,15 @@ public class FirstFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
         binding = FragmentFirstBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+//        String userInfoJson = bundle.getArguments().getString("userInfo");
+//        UserInfo userInfo = new Gson().fromJson(userInfoJson, UserInfo.class);
+//        binding.textViewUserName.setText(userInfo.getFirstName());
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

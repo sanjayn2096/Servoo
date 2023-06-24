@@ -5,16 +5,22 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import com.example.servoo.MainActivity
 import com.example.servoo.R
+import com.example.servoo.dao.UserDao
 import com.example.servoo.databinding.ActivityOtpBinding
+import com.example.servoo.util.Constants.PHONE_NUMBER
+import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
 
 
@@ -25,6 +31,8 @@ class OTPActivity : AppCompatActivity() {
     private lateinit var callbacks: OnVerificationStateChangedCallbacks
     private var storedVerificationId: String? = ""
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
+    private lateinit var  userDao: UserDao
+    private lateinit var phoneNumber: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,25 +40,18 @@ class OTPActivity : AppCompatActivity() {
         val extras = intent.extras
         binding = ActivityOtpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        FirebaseApp.initializeApp(this)
         val verifyOtpButton = binding.verifyOtp
         val otp = binding.enterOtp
 
         callbacks = object : OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                // This callback will be invoked in two situations:
-                // 1 - Instant verification. In some cases the phone number can be instantly
-                //     verified without needing to send or enter a verification code.
-                // 2 - Auto-retrieval. On some devices Google Play services can automatically
-                //     detect the incoming verification SMS and perform verification without
-                //     user action.
                 Log.d(TAG, "onVerificationCompleted:$credential")
-                //signInWithPhoneAuthCredential(credential)
+                signInWithPhoneAuthCredential(credential)
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
-                // This callback is invoked in an invalid request for verification is made,
-                // for instance if the the phone number format is not valid.
                 Log.w(TAG, "onVerificationFailed", e)
 
                 if (e is FirebaseAuthInvalidCredentialsException) {
@@ -60,7 +61,6 @@ class OTPActivity : AppCompatActivity() {
                 } else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
                     // reCAPTCHA verification attempted with null Activity
                 }
-                // Show a message and update the UI
             }
 
 
@@ -80,28 +80,28 @@ class OTPActivity : AppCompatActivity() {
         }
 
         if (extras != null) {
-            val phoneNumber = extras.getString("PHONE_NUMBER") // Replace "extra_key" with the actual key you used to put the extra in the Intent
+            val phoneNumber = extras.getString(PHONE_NUMBER) // Replace "extra_key" with the actual key you used to put the extra in the Intent
             // Use the extra value as needed
-            binding.phoneNumber2?.setText(phoneNumber)
-            startPhoneNumberVerification(phoneNumber!!, callbacks)
+            this.phoneNumber = phoneNumber!!
+            binding.phoneNumberInOtp?.setText(phoneNumber)
+            startPhoneNumberVerification(phoneNumber, callbacks)
         }
 
         viewModel = ViewModelProvider(this).get(OTPViewModel::class.java)
 
         // Observe the navigation event from the ViewModel
         viewModel.navigateToNext.observe(this) {
-            launchNextActivity()
         }
 
         viewModel.clickEvent.observe(this) { clicked ->
             if (clicked) {
-                val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, otp?.text.toString())
+                Log.d("storedVerificationId = " + storedVerificationId, " otp = " + otp?.text.toString())
+                val credential = verifyPhoneNumberWithCode(storedVerificationId, otp?.text.toString())
                 signInWithPhoneAuthCredential(credential)
             } else {
                 Toast.makeText(this, R.string.invalid_phonenumber, Toast.LENGTH_SHORT).show()
             }
         }
-
 
         verifyOtpButton?.setOnClickListener {
             viewModel.onGetOtpButtonClick(otp?.text.toString())
@@ -117,7 +117,6 @@ class OTPActivity : AppCompatActivity() {
 
 
     private fun startPhoneNumberVerification(phoneNumber: String, callbacks: OnVerificationStateChangedCallbacks) {
-        // [START start_phone_auth]
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber("+91$phoneNumber") // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
@@ -125,7 +124,6 @@ class OTPActivity : AppCompatActivity() {
             .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
-        // [END start_phone_auth]
     }
 
 
@@ -139,8 +137,30 @@ class OTPActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
-                    val user = task.result?.user
-                    launchNextActivity();
+                    userDao = UserDao()
+                    userDao.getUserByPhoneNumber(phoneNumber,
+                        onSuccess = { userInfo ->
+                            // Handle the retrieved user information
+                            if (userInfo != null) {
+                                Log.d(TAG, "User found: ${userInfo.firstName} ${userInfo.lastName}")
+                                val userInfoJson = Gson().toJson(userInfo)
+                                val bundle = Bundle().apply {
+                                    putString("userInfo", userInfoJson)
+                                }
+                                launchNextActivity(MainActivity::class.java, bundle)
+                            } else {
+                                Log.d(TAG,"User not found.")
+                                val bundle = Bundle().apply {
+                                    putString(PHONE_NUMBER, phoneNumber)
+                                }
+                                launchNextActivity(RegistrationActivity::class.java, bundle)
+                            }
+                        },
+                        onFailure = { e ->
+                            // Handle the error
+                            println("Failed to retrieve user information: ${e.message}")
+                        }
+                    )
                 } else {
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
@@ -152,9 +172,12 @@ class OTPActivity : AppCompatActivity() {
     }
     // [END sign_in_with_phone]
 
-    private fun verifyPhoneNumberWithCode(verificationId: String?, code: String) {
+    private fun verifyPhoneNumberWithCode(
+        verificationId: String?,
+        code: String
+    ): PhoneAuthCredential {
         // [START verify_with_code]
-        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
+        return PhoneAuthProvider.getCredential(verificationId!!, code)
         // [END verify_with_code]
     }
 
@@ -176,8 +199,11 @@ class OTPActivity : AppCompatActivity() {
     }
     // [END resend_verification]
 
-    private fun launchNextActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun launchNextActivity(activity : Class<*>, bundle: Bundle?) {
+        val intent = Intent(this, activity)
+        bundle?.let {
+            intent.putExtras(it)
+        }
         startActivity(intent)
         finish()
     }

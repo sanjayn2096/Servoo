@@ -2,6 +2,7 @@ package com.example.servoo;
 
 import android.os.Bundle;
 
+import com.example.servoo.data.model.UserInfo;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,9 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.servoo.databinding.ActivityMainBinding;
+import com.google.gson.Gson;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +31,15 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        String userInfoJson = getIntent().getStringExtra("userInfo");
+
+        Bundle bundle = new Bundle();
+        bundle.putString("userInfo", userInfoJson);
+
         setSupportActionBar(binding.toolbar);
+        getSupportActionBar().hide();
+
+//6312029937
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
