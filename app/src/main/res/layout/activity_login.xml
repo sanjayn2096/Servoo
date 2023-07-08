@@ -53,8 +53,7 @@
         android:layout_height="35dp"
         android:src="@drawable/india_flag"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.099"
+        app:layout_constraintEnd_toStartOf="@+id/phoneNumber"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.764"
@@ -69,19 +68,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/servoo_logo" />
-
-    <EditText
-        android:id="@+id/RegisterText"
-        android:layout_width="320dp"
-        android:layout_height="67dp"
-        android:background="@android:color/transparent"
-        android:ems="10"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:focusedByDefault="false"
-        android:inputType="none"
-        android:text="Register using your Mobile number"
-        tools:layout_editor_absoluteX="51dp"
-        tools:layout_editor_absoluteY="434dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

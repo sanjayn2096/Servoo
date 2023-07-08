@@ -1,4 +1,4 @@
-package com.example.servoo;
+package com.example.servoo.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,33 +9,32 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.servoo.data.model.UserInfo;
-import com.example.servoo.databinding.FragmentFirstBinding;
-import com.google.gson.Gson;
+import com.example.servoo.R;
+import com.example.servoo.databinding.FragmentRestaurantBinding;
 
-public class FirstFragment extends Fragment {
+public class RestaurantFragment extends Fragment {
 
-    private FragmentFirstBinding binding;
+    private FragmentRestaurantBinding binding;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        binding = FragmentFirstBinding.inflate(inflater, container, false);
+        binding = FragmentRestaurantBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        String userInfoJson = bundle.getArguments().getString("userInfo");
+//        String userInfoJson = savedInstanceState.getArguments().getString("userInfo");
 //        UserInfo userInfo = new Gson().fromJson(userInfoJson, UserInfo.class);
 //        binding.textViewUserName.setText(userInfo.getFirstName());
-        binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
+        binding.addRestaurantButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                NavHostFragment.findNavController(RestaurantFragment.this)
+                        .navigate(R.id.action_Launch_Restaurant_Fragment);
             }
         });
     }

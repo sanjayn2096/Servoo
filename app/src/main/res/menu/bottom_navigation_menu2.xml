@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_menu_fragment"
+        android:title="Menu"
+        android:icon="@drawable/notebook" />
+    <item
+        android:id="@+id/tab_restaurant_fragment"
+        android:title="Restaurant"
+        android:icon="@drawable/cookie" />
+    <item
+        android:id="@+id/tab_orders_fragment"
+        android:title="Orders"
+        android:icon="@drawable/chat_circle_add" />
+</menu>

@@ -4,88 +4,84 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.login.RegistrationActivity">
+    tools:context=".fragments.AddRestaurantFragment">
 
     <TextView
-        android:id="@+id/email"
+        android:id="@+id/address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusable="false"
-        android:text="Email Id *"
+        android:text="Address *"
         android:textColor="#050505"
-        app:layout_constraintBottom_toTopOf="@+id/emailInput"
+        app:layout_constraintBottom_toTopOf="@+id/addressInput"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.184"
+        app:layout_constraintHorizontal_bias="0.14"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lastNameInput" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantDescriptionInput" />
 
     <EditText
-        android:id="@+id/firstNameInput"
+        android:id="@+id/restaurantNameInput"
         android:layout_width="282dp"
         android:layout_height="44dp"
-        android:background="@color/fui_transparent"
         android:ems="10"
-        android:hint="First Name"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/lastName"
+        app:layout_constraintBottom_toTopOf="@+id/restaurantDescription"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.519"
+        app:layout_constraintHorizontal_bias="0.434"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firstName" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantName" />
 
     <TextView
-        android:id="@+id/firstName"
+        android:id="@+id/restaurantName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:defaultFocusHighlightEnabled="false"
         android:focusable="false"
         android:selectAllOnFocus="false"
-        android:text="First Name *"
+        android:text="Restaurant Name *"
         android:textColor="#090909"
-        app:layout_constraintBottom_toTopOf="@+id/firstNameInput"
+        app:layout_constraintBottom_toTopOf="@+id/restaurantNameInput"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.192"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newUserText" />
 
     <EditText
-        android:id="@+id/lastNameInput"
+        android:id="@+id/restaurantDescriptionInput"
         android:layout_width="282dp"
         android:layout_height="41dp"
-        android:background="@color/fui_transparent"
         android:ems="10"
-        android:hint="Last Name"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/email"
+        app:layout_constraintBottom_toTopOf="@+id/address"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.434"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lastName" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantDescription" />
 
     <TextView
-        android:id="@+id/lastName"
+        android:id="@+id/restaurantDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:focusable="false"
-        android:text="Last Name"
+        android:text="Description about your restaurant *"
         android:textColor="#0B0A0A"
-        app:layout_constraintBottom_toTopOf="@+id/lastNameInput"
+        app:layout_constraintBottom_toTopOf="@+id/restaurantDescriptionInput"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.189"
+        app:layout_constraintHorizontal_bias="0.29"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/firstNameInput" />
+        app:layout_constraintTop_toBottomOf="@+id/restaurantNameInput" />
 
     <EditText
-        android:id="@+id/emailInput"
+        android:id="@+id/addressInput"
         android:layout_width="282dp"
         android:layout_height="46dp"
-        android:background="@color/fui_transparent"
         android:ems="10"
-        android:hint="example@email.com"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toTopOf="@+id/addRestaurantButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.434"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email" />
+        app:layout_constraintTop_toBottomOf="@+id/address" />
 
     <EditText
         android:id="@+id/newUserText"
@@ -94,10 +90,11 @@
         android:background="@color/fui_transparent"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="New User Registration"
+        android:text="Add Restaurant"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/firstName"
+        app:layout_constraintBottom_toTopOf="@+id/restaurantName"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.12"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,9 +102,9 @@
         android:id="@+id/addRestaurantButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register"
+        android:text="Add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailInput" />
+        app:layout_constraintTop_toBottomOf="@+id/addressInput" />
 </androidx.constraintlayout.widget.ConstraintLayout>

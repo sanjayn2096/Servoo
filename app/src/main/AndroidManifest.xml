@@ -20,10 +20,11 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="MainActivity"
             android:exported="false"
             android:label="@string/title_activity_main"
-            android:theme="@style/Theme.Servoo.NoActionBar">
+            android:theme="@style/Theme.Servoo.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

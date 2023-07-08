@@ -1,5 +1,6 @@
 package com.example.servoo.ui.login
 
+import MainActivity
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -14,10 +15,11 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.servoo.MainActivity
 import com.example.servoo.R
+import com.example.servoo.dao.UserDao
 import com.example.servoo.databinding.ActivityLoginBinding
 import com.example.servoo.util.Constants.PHONE_NUMBER
+import com.firebase.ui.auth.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -28,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var loginViewModel: LoginViewModel
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var userDao: UserDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +107,8 @@ class LoginActivity : AppCompatActivity() {
         Log.d(TAG, "Login Activity onRestart()")
         val currentUser = FirebaseAuth.getInstance().currentUser
         Log.d(TAG, "Current User Auth = " + FirebaseAuth.getInstance().currentUser)
-        if (currentUser != null) {
+        userDao = UserDao();
+        if (currentUser != null && currentUser.isEmailVerified ) {
             val mainIntent = Intent(this, MainActivity::class.java)
             mainIntent.putExtra("USER_NAME", currentUser.displayName)
             startActivity(mainIntent)

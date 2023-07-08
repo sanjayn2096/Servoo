@@ -7,7 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.servoo.MainActivity
+import MainActivity
 import com.example.servoo.R
 import com.example.servoo.dao.UserDao
 import com.example.servoo.data.model.UserInfo
@@ -21,7 +21,7 @@ class RegistrationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
-        val registerButton = findViewById<Button>(R.id.registerButton)
+        val registerButton = findViewById<Button>(R.id.addRestaurantButton)
         val email = findViewById<EditText>(R.id.emailInput)
         val firstName = findViewById<EditText>(R.id.firstNameInput)
         val lastName = findViewById<EditText>(R.id.lastNameInput)

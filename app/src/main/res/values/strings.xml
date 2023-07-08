@@ -19,9 +19,11 @@
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
-    <string name="add_restaurant_button">Add Restaurant</string>
+    <string name="add_restaurant_button">+ Add Restaurant</string>
+    <string name="add_menu_button">+ Add Menu</string>
     <string name="previous">Previous</string>
 
-    <string name="welcome_message">Welcome to Servoo, your Restaurant Manager</string>
+    <string name="welcome_message">Go ahead and add your Restaurant to set up your smart restaurant manager!</string>
+    <string name="add_menu_text">Go ahead and add Food Items in your Menu while we send our agents to verify and activate your account.</string>
     <string name="add_restaurant">Add your restaurant</string>
 </resources>

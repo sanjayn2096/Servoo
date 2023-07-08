@@ -1,13 +1,12 @@
 package com.example.servoo.ui.login
 
+import MainActivity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
-import com.example.servoo.MainActivity
 import com.example.servoo.R
 import com.example.servoo.dao.UserDao
 import com.example.servoo.databinding.ActivityOtpBinding
@@ -18,7 +17,6 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
@@ -56,6 +54,7 @@ class OTPActivity : AppCompatActivity() {
 
                 if (e is FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
+                    Toast.makeText(this@OTPActivity, R.string.invalid_OTP, Toast.LENGTH_SHORT).show()
                 } else if (e is FirebaseTooManyRequestsException) {
                     // The SMS quota for the project has been exceeded
                 } else if (e is FirebaseAuthMissingActivityForRecaptchaException) {
@@ -114,7 +113,6 @@ class OTPActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         updateUI(currentUser)
     }
-
 
     private fun startPhoneNumberVerification(phoneNumber: String, callbacks: OnVerificationStateChangedCallbacks) {
         val options = PhoneAuthOptions.newBuilder(auth)
